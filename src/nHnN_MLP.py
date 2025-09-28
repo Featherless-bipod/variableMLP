@@ -1,6 +1,7 @@
 import numpy as np 
 import pandas as pd 
 import functions as fun
+import time
 
 
 def process_data(route, testAmount, scale,results,rem_axis = None):
@@ -20,7 +21,7 @@ def process_data(route, testAmount, scale,results,rem_axis = None):
 
     pixels, train_trials = train_x.shape
     
-    return test_y,test_x,train_y,train_x, pixels,train_trials
+    return test_y,test_x,train_y,train_x, pixels,train_trials,results
 
 
 def init_parameters(H, N, pixels, results):
@@ -122,16 +123,20 @@ def back_propogation(OUT, train_y, Z, A, params):
     gradient = []
 
     dz = OUT - Y
-    dw = 1/m * np.dot(dz, A[-2].T) 
-    db = 1/m * np.sum(dz, axis=1, keepdims=True)
+    dw = (1/m) * np.dot(dz, A[-2].T)    # last hidden activation
+    db = (1/m) * np.sum(dz, axis=1, keepdims=True)
     gradient.append([dw, db])
-    
-    for i in range(1, len(params)):
-        dw = 1/m * np.dot(dz, A[-i-1].T) 
-        db = 1/m * np.sum(dz, axis=1, keepdims=True)
-        gradient.append([dw, db])
-    
-    return gradient[::-1]  # Reverse to match params order
+
+    for i in range(len(params)-2, -1, -1):   # from last hidden down to first hidden
+        W_next = params[i+1][0]              # weights of the layer after current
+        dz = np.dot(W_next.T, dz) * fun.derv_ReLu(Z[i])
+        dw = (1/m) * np.dot(dz, A[i].T)      # A[i] is activation of previous layer
+        db = (1/m) * np.sum(dz, axis=1, keepdims=True)
+        gradient.insert(0, [dw, db])         # insert at front to keep order
+
+    return gradient 
+     
+
 
 def gradient_descent(H, N, X, Y, pixels, results, iterations, alpha):
     """
@@ -162,18 +167,23 @@ def gradient_descent(H, N, X, Y, pixels, results, iterations, alpha):
         Trained parameters for each layer.
     """
     params = init_parameters(H, N, pixels, results)
+    accuracy = []
+    epoch_time = []
     for i in range(iterations):
+        start_time = time.time()
         OUT, Z, A = forward_propogation(X, params)
         gradient = back_propogation(OUT, Y, Z, A, params)
         
-        # Update parameters
         for j in range(len(params)):
-            params[j][0] -= alpha * gradient[-j][0]
-            params[j][1] -= alpha * gradient[-j][1]
+            params[j][0] -= alpha * gradient[j][0]
+            params[j][1] -= alpha * gradient[j][1]
         
         if i % 100 == 0:
             alpha = alpha
             print(f"Iteration:{i}")
-            print(fun.get_accuracy(A[-1], Y))
+            print(fun.get_accuracy(OUT, Y))
+            accuracy.append(fun.get_accuracy(OUT, Y))
+            epoch_time.append(time.time()-start_time)
 
-    return params
+
+    return params,accuracy,epoch_time
