@@ -3,6 +3,7 @@ import pandas as pd
 import nHnN_MLP as nMLP
 
 route = '../data/TMNIST_data.csv'
+#route = 
 testAmount = 1000
 scale = 255
 results = 10
