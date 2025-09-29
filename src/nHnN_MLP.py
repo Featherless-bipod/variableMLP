@@ -23,6 +23,7 @@ def process_data(route, testAmount, scale,results,rem_axis = None):
     
     return test_y,test_x,train_y,train_x, pixels,train_trials,results
 
+
 def init_parameters(H, N, pixels, results, act = None):
     """
     Initialize weights and biases for a neural network with H hidden layers.
@@ -94,7 +95,7 @@ def init_parameters(H, N, pixels, results, act = None):
             np.zeros((n_out, 1))                  
         ])
         return params
-    else:
+    elif act == "uniform":
         params.append([
             np.random.rand(N, pixels) - 0.5,  
             np.random.rand(N, 1) - 0.5       
@@ -109,6 +110,8 @@ def init_parameters(H, N, pixels, results, act = None):
             np.random.rand(results, 1) - 0.5   
         ])
         return params
+    else: 
+        raise ValueError(f"unknown initialization {act}")
 
 def forward_propogation(IN, params):
     """
@@ -128,15 +131,14 @@ def forward_propogation(IN, params):
         - Zs: List of pre-activations for each layer.
         - As: List of activations (including input layer).
     """
-    Zs, As = [], [IN]  # As starts with input X
+    Zs, As = [], [IN] 
     
-    for W, b in params[:-1]:  # Process all but last layer
+    for W, b in params[:-1]: 
         Z = np.dot(W, As[-1]) + b
-        A = fun.ReLu(Z)  # or sigmoid for first layer
+        A = fun.ReLu(Z) 
         Zs.append(Z)
         As.append(A)
     
-    # Output layer (softmax)
     W_out, b_out = params[-1]
     Z_out = np.dot(W_out, As[-1]) + b_out
     OUT = fun.softmax(Z_out)
@@ -171,20 +173,32 @@ def back_propogation(OUT, train_y, Z, A, params):
     gradient = []
 
     dz = OUT - Y
-    dw = (1/m) * np.dot(dz, A[-2].T)    # last hidden activation
+    dw = (1/m) * np.dot(dz, A[-2].T) 
     db = (1/m) * np.sum(dz, axis=1, keepdims=True)
     gradient.append([dw, db])
 
-    for i in range(len(params)-2, -1, -1):   # from last hidden down to first hidden
-        W_next = params[i+1][0]              # weights of the layer after current
+    for i in range(len(params)-2, -1, -1):
+        W_next = params[i+1][0]             
         dz = np.dot(W_next.T, dz) * fun.derv_ReLu(Z[i])
-        dw = (1/m) * np.dot(dz, A[i].T)      # A[i] is activation of previous layer
+        dw = (1/m) * np.dot(dz, A[i].T)      
         db = (1/m) * np.sum(dz, axis=1, keepdims=True)
-        gradient.insert(0, [dw, db])         # insert at front to keep order
+        gradient.insert(0, [dw, db])        
 
     return gradient 
-     
-def gradient_descent(H, N, X, Y, pixels, results, iterations, alpha, act):
+
+def make_lr_schedule(schedule, base_lr, iters, step_size=100, decay_rate=0.99):
+    if schedule == "fixed":
+        return lambda epoch: base_lr
+    elif schedule == "step":
+        return lambda epoch: base_lr * (0.5 ** (epoch // step_size))
+    elif schedule == "exp":
+        return lambda epoch: base_lr * (decay_rate ** epoch)
+    elif schedule == "cosine":
+        return lambda epoch: base_lr * (0.5 * (1 + np.cos(np.pi * epoch / iters)))
+    else:
+        raise ValueError(f"Unknown schedule {schedule}")
+
+def gradient_descent(H, N, X, Y, pixels, results, iterations, base_lr = 0.1, act = "uniform", schedule="fixed", step_size=100, decay_rate=0.99):
     """
     Train the neural network using gradient descent.
 
@@ -215,21 +229,22 @@ def gradient_descent(H, N, X, Y, pixels, results, iterations, alpha, act):
     params = init_parameters(H, N, pixels, results, act)
     accuracy = []
     epoch_time = []
-    for i in range(iterations):
+    lr_schedule = make_lr_schedule(schedule, base_lr, iterations, step_size, decay_rate)
+    for epoch in range(iterations):
         start_time = time.time()
         OUT, Z, A = forward_propogation(X, params)
         gradient = back_propogation(OUT, Y, Z, A, params)
-
+            
+        alpha = lr_schedule(epoch)
         for j in range(len(params)):
             params[j][0] -= alpha * gradient[j][0]
             params[j][1] -= alpha * gradient[j][1]
-        
-        if i % 100 == 0:
+            
+        if epoch % 100 == 0:
             OUT, _, _ = forward_propogation(X, params)
             acc = fun.get_accuracy(OUT, Y)
-            print(f"Iteration {i}, Accuracy={acc:.4f}")
+            print(f"Iteration {epoch}, Accuracy={acc:.4f}")
             accuracy.append(acc)
             epoch_time.append(time.time() - start_time)
-
 
     return params,accuracy,epoch_time
