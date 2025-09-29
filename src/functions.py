@@ -32,9 +32,16 @@ def softmax(Z):
     numpy.ndarray
         Element-wise maximum of 0 and Z.
     """
-    return np.exp(Z)/sum(np.exp(Z))
+    # Subtract the max for numerical stability
+    shift_Z = Z - np.max(Z, axis=0, keepdims=True)
+    
+    # Exponentiate
+    exps = np.exp(shift_Z)
+    
+    # Normalize
+    return exps / np.sum(exps, axis=0, keepdims=True)
 
-def one_hot(Y):
+def one_hot(Y,num_classes=10):
     """
     Convert class labels to one-hot encoded vectors.
 
@@ -48,9 +55,9 @@ def one_hot(Y):
     numpy.ndarray
         One-hot encoded matrix (shape [num_classes, batch_size]).
     """
-    Y_one_hot = np.zeros((Y.size, Y.max()+1)) #LEARN NEED (())
-    Y_one_hot[np.arange(Y.size),Y] = 1    #LEARN
-    return Y_one_hot.T
+    one_hot_Y = np.zeros((num_classes, Y.size))
+    one_hot_Y[Y, np.arange(Y.size)] = 1
+    return one_hot_Y
 
 def derv_sigmoid(Z):
     """

@@ -23,8 +23,7 @@ def process_data(route, testAmount, scale,results,rem_axis = None):
     
     return test_y,test_x,train_y,train_x, pixels,train_trials,results
 
-
-def init_parameters(H, N, pixels, results):
+def init_parameters(H, N, pixels, results, act = None):
     """
     Initialize weights and biases for a neural network with H hidden layers.
 
@@ -47,20 +46,69 @@ def init_parameters(H, N, pixels, results):
         - b: Bias vector (shape [neurons_current, 1]).
     """
     params = []
-    params.append([
-        np.random.rand(N, pixels) - 0.5,  
-        np.random.rand(N, 1) - 0.5       
-    ])
-    for _ in range(H-1):
+    if act == "xavier":
+        n_in = pixels
+        n_out = N
+        limit = np.sqrt(6 / (n_in + n_out)) 
         params.append([
-            np.random.rand(N, N) - 0.5,   
-            np.random.rand(N, 1) - 0.5    
+            np.random.uniform(-limit, limit, (n_out, n_in)), 
+            np.zeros((n_out, 1))                             
         ])
-    params.append([
-        np.random.rand(results, N) - 0.5,  
-        np.random.rand(results, 1) - 0.5   
-    ])
-    return params
+        for _ in range(H - 1):
+            n_in = N
+            n_out = N
+            limit = np.sqrt(6 / (n_in + n_out))
+            params.append([
+                np.random.uniform(-limit, limit, (n_out, n_in)),
+                np.zeros((n_out, 1))                             
+            ])
+        n_in = N
+        n_out = results
+        limit = np.sqrt(6 / (n_in + n_out))
+        params.append([
+            np.random.uniform(-limit, limit, (n_out, n_in)),
+            np.zeros((n_out, 1))                             
+        ])
+        return params
+    elif act == "he":
+        n_in = pixels
+        n_out = N
+        std_dev = np.sqrt(2 / n_in) 
+        params.append([
+            np.random.randn(n_out, n_in) * std_dev, 
+            np.zeros((n_out, 1))                   
+        ])
+        for _ in range(H - 1):
+            n_in = N
+            n_out = N
+            std_dev = np.sqrt(2 / n_in)
+            params.append([
+                np.random.randn(n_out, n_in) * std_dev,
+                np.zeros((n_out, 1))                  
+            ])
+        n_in = N
+        n_out = results
+        std_dev = np.sqrt(2 / n_in) 
+        params.append([
+            np.random.randn(n_out, n_in) * std_dev, 
+            np.zeros((n_out, 1))                  
+        ])
+        return params
+    else:
+        params.append([
+            np.random.rand(N, pixels) - 0.5,  
+            np.random.rand(N, 1) - 0.5       
+        ])
+        for _ in range(H-1):
+            params.append([
+                np.random.rand(N, N) - 0.5,   
+                np.random.rand(N, 1) - 0.5    
+            ])
+        params.append([
+            np.random.rand(results, N) - 0.5,  
+            np.random.rand(results, 1) - 0.5   
+        ])
+        return params
 
 def forward_propogation(IN, params):
     """
@@ -136,9 +184,7 @@ def back_propogation(OUT, train_y, Z, A, params):
 
     return gradient 
      
-
-
-def gradient_descent(H, N, X, Y, pixels, results, iterations, alpha):
+def gradient_descent(H, N, X, Y, pixels, results, iterations, alpha, act):
     """
     Train the neural network using gradient descent.
 
@@ -166,24 +212,24 @@ def gradient_descent(H, N, X, Y, pixels, results, iterations, alpha):
     list of lists
         Trained parameters for each layer.
     """
-    params = init_parameters(H, N, pixels, results)
+    params = init_parameters(H, N, pixels, results, act)
     accuracy = []
     epoch_time = []
     for i in range(iterations):
         start_time = time.time()
         OUT, Z, A = forward_propogation(X, params)
         gradient = back_propogation(OUT, Y, Z, A, params)
-        
+
         for j in range(len(params)):
             params[j][0] -= alpha * gradient[j][0]
             params[j][1] -= alpha * gradient[j][1]
         
         if i % 100 == 0:
-            alpha = alpha
-            print(f"Iteration:{i}")
-            print(fun.get_accuracy(OUT, Y))
-            accuracy.append(fun.get_accuracy(OUT, Y))
-            epoch_time.append(time.time()-start_time)
+            OUT, _, _ = forward_propogation(X, params)
+            acc = fun.get_accuracy(OUT, Y)
+            print(f"Iteration {i}, Accuracy={acc:.4f}")
+            accuracy.append(acc)
+            epoch_time.append(time.time() - start_time)
 
 
     return params,accuracy,epoch_time
