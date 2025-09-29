@@ -19,5 +19,5 @@ learning_rate = 0.1
 epochs = 1000
 
 test_y,test_x,train_y,train_x, pixels,train_trials,results = nMLP.process_data(route, testAmount, scale, results,rem_axis=rem_axis)
-params = nMLP.gradient_descent(hidden_layers,nodes_per_layer,train_x,train_y,pixels,results,epochs,learning_rate,schedule="fixed")
+params = nMLP.gradient_descent(hidden_layers,nodes_per_layer,train_x,train_y,pixels,results,epochs,learning_rate,schedule="fixed",batch_size = 64)
 
