@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import time
 import test as t
 
-route = 'data/TMNIST_data.csv'
+route = '../data/TMNIST_data.csv'
 #route = 
 testAmount = 1000
 scale = 255
