@@ -46,15 +46,14 @@ Increasing neurons improved representational power up to ~128, after which gains
 | 128–256 | ~0.90    | Plateau, diminishing returns |
 
 📌 **Observation:** Width improves performance only up to a threshold, after which additional capacity yields little benefit.  
-![Accuracy vs Neuron Count](data/Graphs/accuracyVSneuron.png)   
-
+<img src="data/Graphs/accuracyVSneuron.png" alt="Accuracy vs Neuron Count" width="400"/>
 ---
 
 ### Hidden Layer Depth  
 Deeper networks underperformed significantly. Two or three hidden layers produced the strongest results, while networks with 10+ layers failed to generalize, collapsing near random accuracy. This reflects vanishing gradients in plain MLPs without normalization or residual connections.  
 
 📌 **Observation:** For standard MLPs, increased depth is detrimental without architectural modifications.  
-![Accuracy vs Depth](data/Graphs/accuracyVShidden.png)  
+<img src="data/Graphs/accuracyVShidden.png" alt="Accuracy vs Hidden Layer Count" width="400"/>
 
 ---
 
@@ -68,8 +67,9 @@ Initialization strongly affected stability and convergence. Uniform initializati
 | He       | ~0.94    | Stable with ReLU         | Slightly slower than Xavier |
 
 📌 **Observation:** Variance-preserving schemes (Xavier, He) substantially improve convergence over naive uniform initialization.  
-![Initialization Comparison](data/Graphs/accuracyVSinitialization.png)  
-![Initailization Pareto Frontier](data/Graphs/accuracyVSinitialization2.png)
+<img src="data/Graphs/accuracyVSinitialization.png" alt="Initialization Comparison" width="400"/>
+<img src="data/Graphs/accuracyVSinitialization2.png" alt="Initialization Pareto Frontier" width="400"/>
+
 
 ---
 
@@ -77,7 +77,8 @@ Initialization strongly affected stability and convergence. Uniform initializati
 The learning rate schedule was decisive. Fixed rates yielded the highest accuracy but with longer training. Cosine annealing balanced efficiency and generalization most effectively. Step decay performed moderately but plateaued, while exponential decay degraded performance due to overly rapid reduction.  
 
 📌 **Observation:** Smoothly decaying schedules (e.g., cosine) provide stable convergence and robust generalization.  
-![Learning Rate Comparison](data/Graphs/accuracyVSlr.png)  
+<img src="data/Graphs/accuracyVSlr.png" alt="Learning Rate Comparison" width="400"/>
+
 
 ---
 
@@ -87,6 +88,9 @@ Batch size directly influenced both efficiency and generalization. Smaller batch
 📌 **Observation:** Moderate batch sizes balance computational efficiency with generalization, consistent with prior findings on the large-batch generalization gap.  
 ![Batch Size Comparison](data/Graphs/accuracyVSbatch.png)  
 ![Batch Size Pareto Frontier](data/Graphs/accuracyVSinitialization2.png)
+<img src="data/Graphs/accuracyVSbach.png" alt="Batch Size Comparison" width="400"/>
+<img src="data/Graphs/accuracyVSbatch2.png" alt="Batch Size Pareto Frontier" width="400"/>
+
 
 ---
 
