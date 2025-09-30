@@ -387,3 +387,13 @@ def gradient_descent(H, N, X, Y, pixels, results, iterations, base_lr = 0.1, act
             hundred_duration.append(epoch_duration)
 
     return params, accuracy, hundred_duration, epoch_time
+
+def train_and_evaluate(H, N, train_x, train_y, test_x, test_y, pixels, results, iters, alpha, act = "uniform", schedule = "fixed", batch_size = None):
+    start = time.time()
+    params, training_accuracy, hundred_duration, epoch_time = gradient_descent(H, N, train_x, train_y, pixels, results, iters, alpha, act, schedule, batch_size=batch_size)
+    total_duration = time.time() - start
+    OUT, _, _ = forward_propogation(test_x, params)
+    preds = np.argmax(OUT, axis=0)
+    test_acc = np.mean(preds == test_y)
+    
+    return test_acc, total_duration, training_accuracy, hundred_duration, epoch_time
