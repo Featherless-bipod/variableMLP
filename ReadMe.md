@@ -86,8 +86,6 @@ The learning rate schedule was decisive. Fixed rates yielded the highest accurac
 Batch size directly influenced both efficiency and generalization. Smaller batches generalized better but trained more slowly. Full-batch training minimized runtime per epoch but collapsed test accuracy (~55%). The best results came from medium-sized batches (128–256).  
 
 📌 **Observation:** Moderate batch sizes balance computational efficiency with generalization, consistent with prior findings on the large-batch generalization gap.  
-![Batch Size Comparison](data/Graphs/accuracyVSbatch.png)  
-![Batch Size Pareto Frontier](data/Graphs/accuracyVSinitialization2.png)
 <img src="data/Graphs/accuracyVSbach.png" alt="Batch Size Comparison" width="400"/>
 <img src="data/Graphs/accuracyVSbatch2.png" alt="Batch Size Pareto Frontier" width="400"/>
 
