@@ -1,9 +1,21 @@
-# From-Scratch MLP on MNIST: Architecture Scaling and Training Analysis  
+# VariableMLP: A From-Scratch MLP Demonstrating Architecture Scaling and Training Analysis  
+VariableMLP is a project made to demonstrate the various effects different parameters can have on the training and prediction of Machine Learning Models. The model utilized in this repository is a simple but classic multi-layer perceptron (MLP) implemented with only NumPy and no high level libraries. This way, interested individuals who are new to the field can click into any file and read the code to fully understand any class or method used. 
+
+To me, taking the first step into the machine learning world was very difficult with all of these daunting complex repositories and frameworks. This repository wishes to serve as a pedagogical resource that can help any beginner understand the core fundementals of ML, and become a stepping stone for their future exploration into this fascinating world. 
+
 
 ## 📌 Overview  
 This project implements a **Multi-Layer Perceptron (MLP) from scratch in NumPy** as a framework for studying how architectural scaling and optimization choices affect training on the MNIST dataset. While MLPs on MNIST are a well-established benchmark, this work aims to systematically evaluate how width, depth, initialization, learning rate schedules, and batch size interact to shape convergence dynamics and generalization.  
 
-Rather than seeking state-of-the-art performance, the goal is to highlight how seemingly minor design choices can significantly alter both efficiency and outcomes — observations that remain relevant even in larger, modern architectures.  
+#### Folders and Files: 
+- `main.ipynb` : The main jupyter notebook that calls upon the functions to train and tes the model, as well as graphing the results to show accuracy and efficiency. There are various sections corresponding to the various hyperparameters that can be tuned in a ML model(included parameters are: model width, model depth, initializations, learning rate schedules, batch sizes). Each section has a training cell that shows the different choices for tuning and a graphing cell that shows utilizes various graphs (Accuracy Vs. Epoch, Fourier Frontier, etc.) to show the user the result. Each section also has a tailored explanation of the phenomenons obvsersed in tuning the specific paramter. 
+
+- `src` : contains the different python files that are used to run the main.ipynb notebook
+  - `functions.py` : contains the specific functions (eg. one_hot, relu, softmax, derv_relu) utilized in MLP processes
+  - `nMLP.py`: contains the backbone model functions (eg. gradient descent, forward propogation, backward propogation) that run the actual model. 
+  - `practice_training.py` : file used to test the funcitonality of the model and its functions outside of the main.ipynb notebook. 
+- `data`: contains the MNIST dataset and some generated sample graphs from prior runs of the ipynb notebook. 
+- `archive` : contains prototype and old code from when I was developing the repository, not that important. 
 
 ---
 
@@ -108,7 +120,7 @@ Although these findings are specific to MNIST and MLPs, the patterns — diminis
 
 ## 🚀 How to Run  
 ```bash
-git clone https://github.com/<your-username>/mlp-from-scratch.git
+git clone https://github.com/Featherless-bipod/variableMLP.git
 cd mlp-from-scratch
 python src/main.py
 ```

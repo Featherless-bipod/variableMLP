@@ -1,6 +1,6 @@
 import numpy as np 
 import pandas as pd 
-import functions as fun
+import src.functions as fun
 import time
 
 

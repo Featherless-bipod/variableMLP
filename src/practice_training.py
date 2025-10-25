@@ -1,6 +1,6 @@
 import numpy as np 
 import pandas as pd 
-import nHnN_MLP as nMLP
+import nMLP as nMLP
 import matplotlib.pyplot as plt
 import time
 import test as t
